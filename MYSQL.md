@@ -24,12 +24,6 @@ mysql_install_db --datadir=/data/mysql --user=mysql #初始化数据库
 mysqld --initialize --user=mysql --basedir=/apps/mysql --datadir=/data/mysql 2>&1 | tee /data/mysql_init.log
 ```
 
-MyISAM:每张表三个文件。.frm：表结构 .MYD：表数据 .MYI：表索引
-
-InnoDB：所有表共享一个表空间；.frm：表结构 .ibd:表空间（表数据和表索引）
-
-
-
 # mysql修改用户密码
 
 ```shell
@@ -257,7 +251,7 @@ Query OK, 0 rows affected (0.00 sec)
 
 
 
-## 8在slave端启动主从复制
+## 8.在slave端启动主从复制
 
 ```shell
 mysql> 
@@ -281,11 +275,100 @@ mysql> show slave status \G;
               Replicate_Do_DB:  
 ```
 
+## MYSQL服务器命令
 
+```shell
+mysql> help create index
+[root@mysql mysql]# mysqladmin create hellodb
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| hellodb            |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.00 sec)
 
+mysql>Bye
+[root@mysql mysql]# mysqladmin ping 
+mysqld is alive
+[root@mysql mysql]# mysqladmin processlist
++----+------+-----------+----+---------+------+----------+------------------+
+| Id | User | Host      | db | Command | Time | State    | Info             |
++----+------+-----------+----+---------+------+----------+------------------+
+| 10 | root | localhost |    | Query   | 0    | starting | show processlist |
++----+------+-----------+----+---------+------+----------+------------------+
+[root@mysql mysql]# mysqladmin status
+Uptime: 1728  Threads: 1  Questions: 106  Slow queries: 0  Opens: 115  Flush tables: 1  Open tables: 108  Queries per second avg: 0.061
+[root@mysql mysql]# mysqladmin extended-status  #状态变量
+[root@mysql mysql]# mysqladmin variables #服务器变量
+[root@mysql mysql]# mysqladmin flush-privileges | mysqladmin reload
+[root@mysql mysql]# mysqladmin flush-status #重置服务器变量
+[root@mysql mysql]# mysqladmin flush-logs #日志滚动（二进制和中继日志）
+[root@mysql mysql]# mysqladmin refresh #mysqladmin flush-hosts && mysqladmin flush-logs
+[root@mysql mysql]# mysqladmin version
+[root@mysql mysql]# mysqladmin start-slave | mysqladmin stop-slave #启动从服务器复制线程
+[root@mysql mysql]# mysql -A -e "show databases;"
+[root@mysql mysql]# mysql -A -e "show global variables like 'sql%'"
+[root@mysql mysql]# mysql -A -e "show session variables;"
+mysql> show engines;
++--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+| Engine             | Support | Comment                                                        | Transactions | XA   | Savepoints |
++--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+| InnoDB             | DEFAULT | Supports transactions, row-level locking, and foreign keys     | YES          | YES  | YES        |
+| MRG_MYISAM         | YES     | Collection of identical MyISAM tables                          | NO           | NO   | NO         |
+| MEMORY             | YES     | Hash based, stored in memory, useful for temporary tables      | NO           | NO   | NO         |
+| BLACKHOLE          | YES     | /dev/null storage engine (anything you write to it disappears) | NO           | NO   | NO         |
+| MyISAM             | YES     | MyISAM storage engine                                          | NO           | NO   | NO         |
+| CSV                | YES     | CSV storage engine                                             | NO           | NO   | NO         |
+| ARCHIVE            | YES     | Archive storage engine                                         | NO           | NO   | NO         |
+| PERFORMANCE_SCHEMA | YES     | Performance Schema                                             | NO           | NO   | NO         |
+| FEDERATED          | NO      | Federated MySQL storage engine                                 | NULL         | NULL | NULL       |
++--------------------+---------+----------------------------------------------------------------+--------------+------+------------+
+9 rows in set (0.00 sec)
 
+mysql>use mysql
+mysql> show table status like 'user'\G
+*************************** 1. row ***************************
+           Name: user
+         Engine: MyISAM
+        Version: 10
+     Row_format: Dynamic
+           Rows: 3
+ Avg_row_length: 128
+    Data_length: 384
+Max_data_length: 281474976710655
+   Index_length: 4096
+      Data_free: 0
+ Auto_increment: NULL
+    Create_time: 2021-09-02 21:10:30
+    Update_time: 2021-09-02 21:11:43
+     Check_time: NULL
+      Collation: utf8_bin
+       Checksum: NULL
+ Create_options: 
+        Comment: Users and global privileges
+1 row in set (0.00 sec)
+```
 
+- MyISAM:每张表三个文件。
+  - .frm：表结构 
+  - .MYD：表数据 
+  - .MYI：表索引
+- InnoDB：所有表共享一个表空间；
+  - .frm：表结构 
+  - .ibd:表空间（表数据和表索引
 
+```shell
+/etc/my.cnf
+/etc/mysql/my.cnf
+$MYSQL_HOME/my.cnf
+--default-extra-file=/path/to/somefile
+~/.my.cnf
+```
 
   
 
